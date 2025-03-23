@@ -1,16 +1,19 @@
-NAME	=	LibASM
+NAME	=	globalbankster
 
-SRC	=
+SRC	=	Account.cpp\
+		tests.cpp
 
-CC	=	nasm
+CC	=	c++
 
-CFLAGS	=	-elf64
+CFLAGS	=	-Wall -Wextra -Werror -MMD -g3
 
 INCLUDES	=	includes/
 
-SRC_DIR	=	srcs/
-
 BUILD	=	.build/
+
+OBJ	=	$(addprefix $(BUILD), $(SRC:.cpp=.o))
+
+DEPS	=	$(OBJ:.o=.d)
 
 all:	$(NAME)
 
@@ -18,9 +21,9 @@ $(BUILD):
 	@mkdir -p $@
 
 $(NAME):	$(BUILD) $(OBJ)
-	ld $(OBJ) -o $@
+	$(CC) $(OBJ) -o $@
 
-$(BUILD)%.o: $(SRC_DIR)%.s
+$(BUILD)%.o:	%.cpp Makefile
 	$(CC) $(CFLAGS) -c $< -o $@ -I $(INCLUDES)
 
 clean:
@@ -32,3 +35,6 @@ fclean:	clean
 re: fclean all
 
 .PHONY: re all fclean clean
+
+-include $(OBJ:.o=.d)
+
